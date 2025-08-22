@@ -26,11 +26,11 @@ def parse_menu_html(html: str) -> Menu:
     try:
         date = date_area.split('">')[1].split('</a>')[0]
     except IndexError:
-        date = "Unknown Date"
+        date = "THE WEEKEND"
 
     menu_table = find_area_in_html(current_day, '<table class="menues">', '</table>')
-    menu_rows = []
     temp_table = menu_table
+    menu_rows = []
     while True:
         start = temp_table.find('<tr')
         end = temp_table.find('</tr>', start)
@@ -59,6 +59,30 @@ def parse_menu_html(html: str) -> Menu:
             price = find_area_in_html(row_html, 'menue-item menue-price large-price">', '</span>')
             menu_item.price = price
         menu.add_item(menu_item)
+        
+
+    extras_table = find_area_in_html(current_day, '<table class="extras">', '</table>')
+    sides_array = []
+    while True:
+        start = extras_table.find('<tr')
+        end = extras_table.find('</tr>', start)
+        if start == -1 or end == -1:
+            break
+        row_html = extras_table[start:end]
+        sides_array.append(row_html)
+        extras_table = extras_table[end:]
+
+    for side_html in sides_array:
+        # print(side_html)
+        side_category = find_area_in_html(side_html, 'class="menue-item extra menue-category">', '</span>')
+        menu_item = MenuItem(category=side_category.capitalize(), price="-", is_available=True, is_side=True)
+
+        items = find_area_in_html(side_html, '<span class="menue-nutr">+</span>', '<br />')
+        items = [part.split("<sup>")[0].strip() for part in items.split(r'<span class="seperator">or</span>')]
+        menu_item.main = items[0]
+        menu_item.sides = items[1:] if len(items) > 1 else []
+        menu.add_item(menu_item)
+
     return menu
 
 

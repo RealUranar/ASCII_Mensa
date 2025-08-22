@@ -110,7 +110,9 @@ def generate_menu_table(
         # Wrap without breaking words; keep long tokens intact if needed
         return textwrap.wrap(s, width=width, break_long_words=False, break_on_hyphens=True) or [""]
 
-    def paint_cell(text, colname, unavailable=False):
+    def paint_cell(text, colname, unavailable=False, is_side=False):
+        if is_side:
+            return f"{colors.DIM}{text}{colors.RESET}"
         if unavailable and colname == "main":
             return f"{colors.BAD}{text}{colors.RESET}"
         if colname == "category":
@@ -155,7 +157,7 @@ def generate_menu_table(
     out.append(make_rule(hbar))
 
     # Data rows
-    for (cat, main, sides, price) in content_rows:
+    for (cat, main, sides, price), it in zip(content_rows, items):
         unavailable = (main == "Not available today")
         # Wrap each cell to its column width
         cat_lines  = wrap_cell(cat,   cat_w)
@@ -172,10 +174,10 @@ def generate_menu_table(
 
         # Emit physical rows
         for i in range(height):
-            cat_txt   = paint_cell(f"{cat_lines[i]:<{cat_w}}",   "category", unavailable)
-            main_txt  = paint_cell(f"{main_lines[i]:<{main_w}}", "main",     unavailable)
-            sides_txt = paint_cell(f"{sides_lines[i]:<{sides_w}}","sides",    unavailable)
-            price_txt = paint_cell(f"{price_lines[i]:<{price_w}}","price",    unavailable)
+            cat_txt   = paint_cell(f"{cat_lines[i]:<{cat_w}}",   "category", unavailable, getattr(it, 'is_side', False))
+            main_txt  = paint_cell(f"{main_lines[i]:<{main_w}}", "main",     unavailable, getattr(it, 'is_side', False))
+            sides_txt = paint_cell(f"{sides_lines[i]:<{sides_w}}","sides",    unavailable, getattr(it, 'is_side', False))
+            price_txt = paint_cell(f"{price_lines[i]:<{price_w}}","price",    unavailable, getattr(it, 'is_side', False))
 
             out.append(
                 vbar

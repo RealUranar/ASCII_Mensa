@@ -2,7 +2,7 @@
 import urllib.request
 import os
 import time
-from typing import Optional
+from typing import Optional, Union
 
 class GetMenuHTML:
     """
@@ -16,7 +16,7 @@ class GetMenuHTML:
         self.web_content: Optional[str] = None
         self.fetch_data()
 
-    def request_data_from_web(self) -> str | None:
+    def request_data_from_web(self) -> Union[str, None]:
         """Fetch data from the web and update the cache file."""
         with urllib.request.urlopen(self.url) as response:
             self.web_content = response.read().decode('utf-8')

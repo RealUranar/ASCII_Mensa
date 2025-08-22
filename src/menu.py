@@ -13,6 +13,7 @@ class MenuItem:
     sides: List[str] = field(default_factory=list)
     price: Optional[str] = None
     is_available: bool = True
+    is_side: bool = False #The Mensa always has sides that are the same for all main dishes, this flag indicates if the item is such a side dish
 
 @dataclass
 class Menu:
