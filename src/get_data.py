@@ -8,7 +8,7 @@ class GetMenuHTML:
     """
     Handles fetching and caching the menu HTML from a URL, with local file caching.
     """
-    CACHE_FILE = "todays_menu.txt"
+    CACHE_FILE = os.path.join(os.path.dirname(__file__), "todays_menu.txt")
     CACHE_HOURS = 8
 
     def __init__(self, url: str):
